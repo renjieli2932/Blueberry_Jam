@@ -7,12 +7,14 @@ Subscribe an original image captured by a camera module and
 Publish object detection results.
 
 <Subscribe>
-Topic: /xxxxx
+Topic Name: /cameras/left_hand_camera/image
 Message type: sensor_msgs/Image
 
 <Publish>
-Topic: /object_detect_image
+Topic Name: /detected_image
 Message type: sensor_msgs/Image
+Topic Name: /detected_object
+Message type:  baxter_object_detection/Object
 
 Required packages: rospy, numpy, cv_bridge
 Note: "cv_bridge" converts ROS images into OpenCV images and vice versa.
@@ -26,14 +28,14 @@ from baxter_object_detection.msg import Object
 from geometry_msgs.msg import Point32
 from simple_shape_recognition import ObjectDetection
 
-def piblish(img,points):
+def publish(img,points):
 
     # Publisher
     image_pub = rospy.Publisher("/detected_image",Image,queue_size=1)
     object_pub = rospy.Publisher("/detected_object",Object,queue_size=1)
 
     # Publish image
-    image_pub.publish(ros_image)
+    image_pub.publish(img)
 
     # Create msg for center position
     msg = Object()
@@ -79,5 +81,6 @@ if __name__ == '__main__':
     # Node definition
     rospy.init_node('object_detector', anonymous=True)
     # Subscribe Image from camera
-    rospy.Subscriber("/usb_cam/image_raw", Image, callback)
+    rospy.Subscriber("/cameras/left_hand_camera/image", Image, callback)
+    #rospy.Subscriber("/usb_cam/image_raw", Image, callback)
     rospy.spin()
