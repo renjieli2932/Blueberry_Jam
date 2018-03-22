@@ -12,9 +12,9 @@ ros::NodeHandle nh;
 // connect motor controller pins to Arduino digital pins
 // Here I assume only one motor is needed
 // Remove the jumper on L298N first to PWN 
-int enA = 10; 
-int in1 = 9;
-int in2 = 8;
+int enA = 9; 
+int in1 = 8;
+int in2 = 7;
 
 void pump_on( const std_msgs::Empty& ros_msg){
   digitalWrite(13, HIGH); //LED On   
