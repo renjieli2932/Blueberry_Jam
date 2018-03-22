@@ -20,7 +20,7 @@ void pump_on( const std_msgs::Empty& ros_msg){
   digitalWrite(13, HIGH); //LED On   
   digitalWrite(in1,HIGH);
   digitalWrite(in2,LOW);
-  analogWrite(enA,200) // Speed Range 0-255
+  analogWrite(enA,200); // Speed Range 0-255
   //delay(10000); // delay 10s (test)
 }
 
@@ -31,8 +31,8 @@ void pump_off( const std_msgs::Empty& ros_msg){
   digitalWrite(in2,LOW);
 }
 
-ros::Subscriber<std_msgs::Empty> sub("pump_on", &pump_on );
-ros::Subscriber<std_msgs::Empty> sub("pump_off", &pump_off );
+ros::Subscriber<std_msgs::Empty> subon("pump_on", &pump_on );
+ros::Subscriber<std_msgs::Empty> suboff("pump_off", &pump_off );
 
 void setup()
 {
@@ -47,7 +47,8 @@ void setup()
   digitalWrite(13,LOW);
 
   nh.initNode();
-  nh.subscribe(sub);
+  nh.subscribe(subon);
+  nh.subscribe(suboff);
 }
 
 void loop()
