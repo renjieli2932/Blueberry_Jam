@@ -5,7 +5,7 @@ import numpy as np
 from baxter_object_detection.msg import Object
 from geometry_msgs.msg import Point32
 from geometry_msgs.msg import Pose
-from std_msgs.msg import Float64, Bool
+from std_msgs.msg import Float64, Bool,Empty
 import time
 
 import argparse
@@ -57,6 +57,11 @@ class PickAndPlace():
 
         self.step = 0
         self._rate = 10 #10Hz
+
+	self.pub_grasp_now = rospy.Publisher("pump_on",Empty,queue_size=1)
+	self.pub_release_now = rospy.Publisher("pump_off",Empty,queue_size=1)
+	#msg_grasp_now = Bool(False)
+        #self.pub_grasp_now.publish(msg_grasp_now)
 
         ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
         self._iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
@@ -128,6 +133,17 @@ class PickAndPlace():
         self.step = self.step + 1
         rospy.sleep(1.0)
 
+    def move_to_hover_2(self):
+        print("Moving the {0} arm to start pose...".format(self._limb_name))
+        hover = copy.deepcopy(self.object_pose3D)
+        # approach with a pose the hover-distance above the requested pose
+        hover.position.z = hover.position.z + self._hover_distance
+	hover.position.y = hover.position.y + 0.15
+        joint_angles = self.ik_request(hover)
+        self._guarded_move_to_joint_position(joint_angles)
+        self.step = self.step + 1
+        rospy.sleep(1.0)
+
     def approach(self):
         current_pose = self._limb.endpoint_pose()
         ik_pose = Pose()
@@ -176,19 +192,6 @@ class PickAndPlace():
             ik_pose.orientation.w = current_pose['orientation'].w
             joint_angles = self.ik_request(ik_pose)
 
-            ik_pose = Pose()
-            ik_pose.position.x = current_pose['position'].x
-            ik_pose.position.y = current_pose['position'].y
-            ik_pose.position.z = current_pose['position'].z
-            ik_pose.orientation.x = current_pose['orientation'].x
-            ik_pose.orientation.y = current_pose['orientation'].y
-            ik_pose.orientation.z = current_pose['orientation'].z
-            ik_pose.orientation.w = current_pose['orientation'].w
-            joint_angles_current = self.ik_request(ik_pose)
-
-            cmd = {}
-            for name in self._limb_joint_names:
-                cmd[name] = (joint_angles[name]-joint_angles_current[name])*freq
             self._guarded_move_to_joint_position(joint_angles)
             #self._limb.set_joint_positions(joint_angles)
             #self._limb.set_joint_velocities(cmd)
@@ -197,7 +200,7 @@ class PickAndPlace():
             print('status=[{0},{1}]'.format(center[0],center[1]))
             print('desired=[{0},{1}]'.format(desired_position[0],desired_position[1]))
             print('desired=[{0},{1}]'.format(diff[0],diff[1]))
-            if np.linalg.norm(diff) < 5:
+            if np.linalg.norm(diff) < 10:
                 self.step = self.step + 1
 
             pub_state = rospy.Publisher("/pixel_x/state",Float64,queue_size=1)
@@ -234,17 +237,24 @@ class PickAndPlace():
         print("Pause. Ctrl-c to quit")
 
     def grasp(self):
+        #msg_grasp_now = Bool(True)
+        #self.pub_grasp_now.publish(msg_grasp_now)
+	self.pub_grasp_now.publish()
+        rospy.sleep(10.0)
+	# TEST
+	self.pub_release_now.publish()
+	# TEST OVER
         self.step = self.step + 1
 
     def main(self):
         rate = rospy.Rate(self._rate)
 
-        # Move to the hover position
-        print("\nHovering...")
-        self.move_to_hover()
         # Motion Start
         while not rospy.is_shutdown():
-            if self.step == 1:
+            if self.step == 0:	    
+	    	print("\nHovering...")
+	        self.move_to_hover()
+            elif self.step == 1:
                 print("\nAdjusting...")
                 self.adjust(0.0003)
             elif self.step == 2:
@@ -253,20 +263,25 @@ class PickAndPlace():
             elif self.step == 3:
                 print("\nGrasping...")
                 self.grasp()
-                rospy.sleep(3.0)
-
             elif self.step == 4:
                 print("\nRetracting...")
                 self.retract()
-            #elif self.step == 3:
-                #print("\nPlacing...")
-            #    self.slide()
-            #elif self.step == 4:m
-                #print("\nPlacing...")
-            #    self.approach()
-            #elif self.step == 5:
-                #print("\nPlacing...")
-            #    self.retract()
+	    elif self.step == 5:
+	    	print("\nMoving to the hole...")
+	        self.move_to_hover_2()
+            elif self.step == 6:
+                print("\nAdjusting...")
+                self.adjust(0.0003)
+            elif self.step == 7:
+                print("\nApproaching...")
+                self.approach()
+            elif self.step == 8:
+                print("\nGrasping...")
+                self.grasp()
+            elif self.step == 9:
+                print("\nRetracting...")
+                self.retract()
+
             else:
                 self.pause()
                 break
@@ -274,7 +289,7 @@ class PickAndPlace():
 
         return 0
 
-
+'''
 def load_gazebo_models(table_pose=Pose(position=Point(x=1.0, y=0.0, z=0.0)),
                        table_reference_frame="world",
                        block_pose=Pose(position=Point(x=0.6725, y=0.1265, z=0.7825)),
@@ -317,21 +332,21 @@ def delete_gazebo_models():
         resp_delete = delete_model("block")
     except rospy.ServiceException, e:
         rospy.loginfo("Delete Model service call failed: {0}".format(e))
-
+'''
 if __name__ == '__main__':
     rospy.init_node('feedback_control', anonymous=True)
 
     # Load Gazebo Models via Spawning Services
-    load_gazebo_models()
+    # load_gazebo_models()
     # Remove models from the scene on shutdown
-    rospy.on_shutdown(delete_gazebo_models)
+    # rospy.on_shutdown(delete_gazebo_models)
     # Wait for the All Clear from emulator startup
-    rospy.wait_for_message("/robot/sim/started", Empty)
+    # rospy.wait_for_message("/robot/sim/started", Empty)
 
     limb = 'left'
-    shape = 'square'
-    hover_distance = 0.30
-    desired_position = [470,400]
+    shape = 'triangle'
+    hover_distance = 0.230
+    desired_position = [325,200]
     pnp = PickAndPlace(shape,desired_position,limb,hover_distance)
 
     pub_pid_enable = rospy.Publisher("/pid_enable",Bool,queue_size=1)
@@ -348,9 +363,9 @@ if __name__ == '__main__':
     #rospy.Subscriber("/xxxxxxx", Pose, pnp.callback_kinect)
     quaternion = tf.transformations.quaternion_from_euler(0.0, math.pi, 0.0, axes='sxyz')
     hover = Pose()
-    hover.position.x = 0.8
+    hover.position.x = 0.7
     hover.position.y = 0.1
-    hover.position.z = -0.15
+    hover.position.z = 0.0
     hover.orientation.x = quaternion[0]
     hover.orientation.y = quaternion[1]
     hover.orientation.z = quaternion[2]
