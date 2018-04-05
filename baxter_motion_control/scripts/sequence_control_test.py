@@ -57,6 +57,7 @@ class PickAndPlace():
         self.control_effort_y = 0.0
         self.object_position = Object()
         self.hover_position = Pose()
+	self.diff_old = 0.0
 
         self.step = 0
         self._rate = 10 #10Hz
@@ -153,12 +154,12 @@ class PickAndPlace():
         self.step = self.step + 1
         rospy.sleep(1.0)
 
-    def approach(self):
+    def change_layer(self, delta_z):
         current_pose = self._limb.endpoint_pose()
         ik_pose = Pose()
         ik_pose.position.x = current_pose['position'].x
         ik_pose.position.y = current_pose['position'].y
-        ik_pose.position.z = self.object_pose3D.position.z
+        ik_pose.position.z = current_pose['position'].z - delta_z
         ik_pose.orientation.x = current_pose['orientation'].x
         ik_pose.orientation.y = current_pose['orientation'].y
         ik_pose.orientation.z = current_pose['orientation'].z
@@ -167,11 +168,38 @@ class PickAndPlace():
         self._guarded_move_to_joint_position(joint_angles)
         self.step = self.step + 1
 
+    def approach(self, adjust_value= 0.0):
+        current_pose = self._limb.endpoint_pose()
+        ik_pose = Pose()
+        ik_pose.position.x = current_pose['position'].x - 0.09
+        ik_pose.position.y = current_pose['position'].y + 0.01
+        ik_pose.position.z = current_pose['position'].z
+        ik_pose.orientation.x = current_pose['orientation'].x
+        ik_pose.orientation.y = current_pose['orientation'].y
+        ik_pose.orientation.z = current_pose['orientation'].z
+        ik_pose.orientation.w = current_pose['orientation'].w
+        joint_angles = self.ik_request(ik_pose)
+        self._guarded_move_to_joint_position(joint_angles)
+
+        current_pose = self._limb.endpoint_pose()
+        ik_pose = Pose()
+        ik_pose.position.x = current_pose['position'].x
+        ik_pose.position.y = current_pose['position'].y
+        ik_pose.position.z = self.object_pose3D.position.z + adjust_value
+        ik_pose.orientation.x = current_pose['orientation'].x
+        ik_pose.orientation.y = current_pose['orientation'].y
+        ik_pose.orientation.z = current_pose['orientation'].z
+        ik_pose.orientation.w = current_pose['orientation'].w
+        joint_angles = self.ik_request(ik_pose)
+        self._guarded_move_to_joint_position(joint_angles)
+
+        self.step = self.step + 1
+
     def adjust(self,gain):
         now_time = time.time()
         freq = 1.0/(now_time - self.prev_time)
         self.prev_time = now_time
-        print(freq)
+        #print(freq)
 
         if self._shape_name == "circle":
             center = self.object_pose2Dpixel.circle_center
@@ -209,11 +237,11 @@ class PickAndPlace():
             print('status=[{0},{1}]'.format(center[0],center[1]))
             print('desired=[{0},{1}]'.format(desired_position[0],desired_position[1]))
             print('desired=[{0},{1}]'.format(diff[0],diff[1]))
-            if np.linalg.norm(diff) < 10:
+            if np.linalg.norm(diff) < 5:
 		#count = count + 1
 		#if
                 self.step = self.step + 1
-
+	    self.diff_old = diff
             pub_state = rospy.Publisher("/pixel_x/state",Float64,queue_size=1)
             msg_state = Float64(center[0])
             pub_state.publish(msg_state)
@@ -261,7 +289,7 @@ class PickAndPlace():
         #msg_grasp_now = Bool(True)
         #self.pub_grasp_now.publish(msg_grasp_now)
 	self.pub_release_now.publish()
-	rospy.sleep(10.0)
+	rospy.sleep(3.0)
 	# TEST OVER
         self.step = self.step + 1
 	
@@ -273,31 +301,71 @@ class PickAndPlace():
             if self.step == 0:	    
 	    	print("\nHovering...")
 	        self.move_to_hover()
-            elif self.step == 1:
-                print("\nAdjusting...")
+	    
+	    elif self.step == 1:
+		print("\nAdjusting...")
                 self.adjust(0.0003)
             elif self.step == 2:
+                print("\nChange Layer...")
+                self.change_layer(0.04)
+	    elif self.step == 3:
+		print("\nAdjusting...")
+                self.adjust(0.0003)
+            elif self.step == 4:
+                print("\nChange Layer...")
+                self.change_layer(0.04)
+            elif self.step == 5:
+		print("\nAdjusting...")
+                self.adjust(0.0003)
+            elif self.step == 6:
+                print("\nChange Layer...")
+                self.change_layer(0.03)
+            elif self.step == 7:
+		print("\nAdjusting...")
+                self.adjust(0.0003)
+		                
+	    elif self.step == 8:
                 print("\nApproaching...")
                 self.approach()
-            elif self.step == 3:
+	    elif self.step == 9:
                 print("\nGrasping...")
                 self.grasp()
-            elif self.step == 4:
+            elif self.step == 10:
                 print("\nRetracting...")
                 self.retract()
-	    elif self.step == 5:
+	    elif self.step == 11:
 	    	print("\nMoving to the hole...")
 	        self.move_to_hover_2()
-            elif self.step == 6:
+
+            elif self.step == 12:
                 print("\nAdjusting...")
+                self.adjust(0.0003)            
+            elif self.step == 13:
+                print("\nChange Layer...")
+                self.change_layer(0.04)
+	    elif self.step == 14:
+		print("\nAdjusting...")
                 self.adjust(0.0003)
-            elif self.step == 7:
+            elif self.step == 15:
+                print("\nChange Layer...")
+                self.change_layer(0.04)
+            elif self.step == 16:
+		print("\nAdjusting...")
+                self.adjust(0.0003)
+            elif self.step == 17:
+                print("\nChange Layer...")
+                self.change_layer(0.03)
+            elif self.step == 18:
+		print("\nAdjusting...")
+                self.adjust(0.0003)
+	
+            elif self.step == 19:
                 print("\nApproaching...")
-                self.approach()
-            elif self.step == 8:
+                self.approach(0.03)
+            elif self.step == 20:
                 print("\nReleasing...")
                 self.release()
-            elif self.step == 9:
+            elif self.step == 21:
                 print("\nRetracting...")
                 self.retract()
 
@@ -363,9 +431,9 @@ if __name__ == '__main__':
     # rospy.wait_for_message("/robot/sim/started", Empty)
 
     limb = 'left'
-    shape = 'circle'
-    hover_distance = 0.280
-    desired_position = [330,165]
+    shape = 'square'
+    hover_distance = 0.25
+    desired_position = [320,250]
     pnp = PickAndPlace(shape,desired_position,limb,hover_distance)
 
     pub_pid_enable = rospy.Publisher("/pid_enable",Bool,queue_size=1)
@@ -384,7 +452,7 @@ if __name__ == '__main__':
     hover = Pose()
     hover.position.x = 0.7
     hover.position.y = 0.1
-    hover.position.z = -0.05
+    hover.position.z = -0.02
     hover.orientation.x = quaternion[0]
     hover.orientation.y = quaternion[1]
     hover.orientation.z = quaternion[2]
