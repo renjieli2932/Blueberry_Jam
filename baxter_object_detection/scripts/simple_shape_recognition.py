@@ -43,8 +43,8 @@ class ObjectDetection():
         self.cnt_all = []
 
         # parameter setting
-        self.area_max = 0.03
-        self.area_min = 0.005
+        self.area_max = 0.05
+        self.area_min = 0.0005
         self.aspect_ratio_max = 1.5
         self.aspect_ratio_min = 0.75
         self.angle_err = 10 * np.pi / 180
@@ -147,10 +147,10 @@ class ObjectDetection():
         self.circles = []
         im_area = np.size(img,0)*np.size(img,1)
         for gray in cv2.split(img):
-            for thrs in range(1, 255, 255/30):
+            for thrs in range(0, 255, 255/1):
                 # Create Binary Image
                 if thrs == 0:
-                    bin = cv2.Canny(gray, 0, 50, apertureSize=5)
+                    bin = cv2.Canny(gray, 0, 50, apertureSize=3)
                     bin = cv2.dilate(bin, None)
                 else:
                     _retval, bin = cv2.threshold(gray, thrs, 255, cv2.THRESH_BINARY)
