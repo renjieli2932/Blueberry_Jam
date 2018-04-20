@@ -285,32 +285,32 @@ class PickAndPlace():
             msg_setpoint = Float64(desired_position[1])
             pub_setpoint.publish(msg_setpoint)
 	
-	else:
-	    print('search')	
-	    current_pose = self._limb.endpoint_pose()
-	    
-	    if self.flag == 1:
-            search_x = 0.5
-            search_y = 0.0
-	    	self.flag = -1
-	    elif self.flag == -1:
-            search_x = 0.65
-	        search_y = 0.0
-  			self.flag = 1
-        
-  	    print(current_pose['position'].x)
-	    
-	    ik_pose = Pose()
-        ik_pose.position.x = search_x
-        ik_pose.position.y = current_pose['position'].y
-        ik_pose.position.z = current_pose['position'].z 
-        ik_pose.orientation.x = current_pose['orientation'].x
-        ik_pose.orientation.y = current_pose['orientation'].y
-        ik_pose.orientation.z = current_pose['orientation'].z
-        ik_pose.orientation.w = current_pose['orientation'].w
-        joint_angles = self.ik_request(ik_pose)
-	    self._guarded_move_to_joint_position(joint_angles)
-	    #self._limb.set_joint_positions(joint_angles)
+        else:
+            print('search')	
+            current_pose = self._limb.endpoint_pose()
+            
+            if self.flag == 1:
+                search_x = 0.5
+                search_y = 0.0
+                self.flag = -1
+            elif self.flag == -1:
+                search_x = 0.65
+                search_y = 0.0
+                self.flag = 1
+            
+            print(current_pose['position'].x)
+            
+            ik_pose = Pose()
+            ik_pose.position.x = search_x
+            ik_pose.position.y = current_pose['position'].y
+            ik_pose.position.z = current_pose['position'].z 
+            ik_pose.orientation.x = current_pose['orientation'].x
+            ik_pose.orientation.y = current_pose['orientation'].y
+            ik_pose.orientation.z = current_pose['orientation'].z
+            ik_pose.orientation.w = current_pose['orientation'].w
+            joint_angles = self.ik_request(ik_pose)
+            self._guarded_move_to_joint_position(joint_angles)
+            #self._limb.set_joint_positions(joint_angles)
 
     def retract(self):
         # retrieve current pose from endpoint
@@ -336,9 +336,9 @@ class PickAndPlace():
         #self.pub_grasp_now.publish(msg_grasp_now)
 		self.pub_grasp_now.publish()
         rospy.sleep(10.0)
-	# TEST
-	#self.pub_release_now.publish()
-	# TEST OVER
+	    # TEST
+	    #self.pub_release_now.publish()
+	    # TEST OVER
         self.step = self.step + 1
 
     def release(self):
@@ -346,7 +346,7 @@ class PickAndPlace():
         #self.pub_grasp_now.publish(msg_grasp_now)
 		self.pub_release_now.publish()
 		rospy.sleep(3.0)
-	# TEST OVER
+	    # TEST OVER
         self.step = self.step + 1
 	
     def main(self):
@@ -378,7 +378,7 @@ class PickAndPlace():
                 print("\nChange Layer...")
                 self.change_layer(0.06)
 	    	elif self.step == 8:
-			print("\nAdjusting...")
+			    print("\nAdjusting...")
                 self.adjust(0.0003)
             elif self.step == 9:
                 print("\nApproaching...")
@@ -390,7 +390,7 @@ class PickAndPlace():
                 print("\nRetracting...")
                 self.retract()
             else:
-            #    self.pause()
+                #self.pause()
                 break
             rate.sleep()
 
