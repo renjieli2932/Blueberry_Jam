@@ -57,16 +57,16 @@ class PickAndPlace():
         self.control_effort_y = 0.0
         self.object_position = Object()
         self.hover_position = Pose()
-	self.diff_old = 0.0
-	self.zposi = 0.0
+	    self.diff_old = 0.0
+	    self.zposi = 0.0
 
         self.step = 0
         self._rate = 10 #10Hz
-	self.display_pub= rospy.Publisher('/robot/xdisplay',Image,queue_size=60)
-	self.pub_grasp_now = rospy.Publisher("pump_on",Empty,queue_size=1)
-	self.pub_release_now = rospy.Publisher("pump_off",Empty,queue_size=1)
-	self.sub = rospy.Subscriber('/detected_image', Image,self.republish,None,1)
-	#msg_grasp_now = Bool(False)
+        self.display_pub= rospy.Publisher('/robot/xdisplay',Image,queue_size=60)
+        self.pub_grasp_now = rospy.Publisher("pump_on",Empty,queue_size=1)
+        self.pub_release_now = rospy.Publisher("pump_off",Empty,queue_size=1)
+        self.sub = rospy.Subscriber('/detected_image', Image,self.republish,None,1)
+	    #msg_grasp_now = Bool(False)
         #self.pub_grasp_now.publish(msg_grasp_now)
 
         ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
@@ -149,7 +149,7 @@ class PickAndPlace():
         hover = copy.deepcopy(self.object_pose3D)
         # approach with a pose the hover-distance above the requested pose
         hover.position.z = hover.position.z + self._hover_distance
-	hover.position.y = hover.position.y + 0.2
+	    hover.position.y = hover.position.y + 0.2
         joint_angles = self.ik_request(hover)
         self._guarded_move_to_joint_position(joint_angles)
         self.step = self.step + 1
@@ -200,14 +200,14 @@ class PickAndPlace():
 	        current_pose['orientation'].y,
 	        current_pose['orientation'].z,
 	        current_pose['orientation'].w)
-	euler = tf.transformations.euler_from_quaternion(quaternion)
-	theta = euler[1] - 0.0*math.pi/180.0
-	q = tf.transformations.quaternion_from_euler(euler[0], theta, euler[2], axes='sxyz')
-	current_pose = self._limb.endpoint_pose()
+        euler = tf.transformations.euler_from_quaternion(quaternion)
+        theta = euler[1] - 0.0*math.pi/180.0
+        q = tf.transformations.quaternion_from_euler(euler[0], theta, euler[2], axes='sxyz')
+        current_pose = self._limb.endpoint_pose()
         ik_pose = Pose()
         ik_pose.position.x = current_pose['position'].x
         ik_pose.position.y = current_pose['position'].y
-	ik_pose.position.z = self.object_pose3D.position.z + adjust_value[2]
+	    ik_pose.position.z = self.object_pose3D.position.z + adjust_value[2]
         #ik_pose.position.z = current_pose['position'].z
         ik_pose.orientation.x = q[0]
         ik_pose.orientation.y = q[1]
@@ -236,12 +236,12 @@ class PickAndPlace():
 
         if center:
 	    
-	    current_pose = self._limb.endpoint_pose()
-	    if current_pose['position'].z < 0.03:
-	    	self.zposi = 0.0
-	    else:
-	    	self.zposi = 0.0
-	    print(current_pose['position'].z)
+            current_pose = self._limb.endpoint_pose()
+            if current_pose['position'].z < 0.03:
+                self.zposi = 0.0
+            else:
+                self.zposi = 0.0
+            print(current_pose['position'].z)
             # Subscribe Image from camera
             rospy.Subscriber("/pixel_x/control_effort", Float64, pnp.callback_control_effort_x)
             rospy.Subscriber("/pixel_y/control_effort", Float64, pnp.callback_control_effort_y)
@@ -267,10 +267,10 @@ class PickAndPlace():
             print('desired=[{0},{1}]'.format(desired_position[0],desired_position[1]))
             print('desired=[{0},{1}]'.format(diff[0],diff[1]))
             if np.linalg.norm(diff) <= 7:
-		#count = count + 1
-		#if
-                self.step = self.step + 1
-	    self.diff_old = diff
+		    #count = count + 1
+		    #if
+            self.step = self.step + 1
+	        self.diff_old = diff
             pub_state = rospy.Publisher("/pixel_x/state",Float64,queue_size=1)
             msg_state = Float64(center[0])
             pub_state.publish(msg_state)
@@ -285,19 +285,19 @@ class PickAndPlace():
             msg_setpoint = Float64(desired_position[1])
             pub_setpoint.publish(msg_setpoint)
 	
-	else:
-	    print('search')	
-	    current_pose = self._limb.endpoint_pose()
-	
-	    if current_pose['position'].x > 0.0:
-                search_x = -0.1
-                search_x = 0.0
-	    else:
-                search_x = 0.1
-	    	search_y = 0.0
+        else:
+            print('search')	
+            current_pose = self._limb.endpoint_pose()
+        
+            if current_pose['position'].x > 0.0:
+                    search_x = -0.1
+                    search_x = 0.0
+            else:
+                    search_x = 0.1
+                    search_y = 0.0
             print(current_pose['position'].x)
-	    
-	    ik_pose = Pose()
+            
+            ik_pose = Pose()
             ik_pose.position.x = current_pose['position'].x + search_x
             ik_pose.position.y = current_pose['position'].y + search_y
             ik_pose.position.z = current_pose['position'].z 
@@ -306,7 +306,7 @@ class PickAndPlace():
             ik_pose.orientation.z = current_pose['orientation'].z
             ik_pose.orientation.w = current_pose['orientation'].w
             joint_angles = self.ik_request(ik_pose)
-	    self._limb.set_joint_positions(joint_angles)
+            self._limb.set_joint_positions(joint_angles)
 
     def retract(self):
         # retrieve current pose from endpoint
