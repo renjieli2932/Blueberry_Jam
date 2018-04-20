@@ -57,8 +57,9 @@ class PickAndPlace():
         self.control_effort_y = 0.0
         self.object_position = Object()
         self.hover_position = Pose()
-	    self.diff_old = 0.0
-	    self.zposi = 0.0
+        self.diff_old = 0.0
+        self.zposi = 0.0
+
 
         self.step = 0
         self._rate = 10 #10Hz
