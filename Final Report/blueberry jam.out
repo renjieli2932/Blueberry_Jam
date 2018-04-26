@@ -1,0 +1,33 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{System}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{System Diagram}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Differences from PDD}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Hardware Components}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Trial \046 Error for Design}{section.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.4.1}{Hanging}{subsection.2.4}% 7
+\BOOKMARK [3][-]{subsubsection.2.4.2}{Moment}{subsection.2.4}% 8
+\BOOKMARK [3][-]{subsubsection.2.4.3}{Diameter of Funnel}{subsection.2.4}% 9
+\BOOKMARK [3][-]{subsubsection.2.4.4}{Battery Power}{subsection.2.4}% 10
+\BOOKMARK [2][-]{subsection.2.5}{Serial Communication \046 Motor Control}{section.2}% 11
+\BOOKMARK [2][-]{subsection.2.6}{Object Detection}{section.2}% 12
+\BOOKMARK [3][-]{subsubsection.2.6.1}{Image Binarization}{subsection.2.6}% 13
+\BOOKMARK [3][-]{subsubsection.2.6.2}{Object Segmentation}{subsection.2.6}% 14
+\BOOKMARK [3][-]{subsubsection.2.6.3}{Filtering\(Size\046Aspect Ratio\)}{subsection.2.6}% 15
+\BOOKMARK [3][-]{subsubsection.2.6.4}{Center Position Calculation}{subsection.2.6}% 16
+\BOOKMARK [2][-]{subsection.2.7}{Motion Planning}{section.2}% 17
+\BOOKMARK [3][-]{subsubsection.2.7.1}{Hovering}{subsection.2.7}% 18
+\BOOKMARK [3][-]{subsubsection.2.7.2}{Approaching}{subsection.2.7}% 19
+\BOOKMARK [3][-]{subsubsection.2.7.3}{Adjusting}{subsection.2.7}% 20
+\BOOKMARK [3][-]{subsubsection.2.7.4}{Grasping}{subsection.2.7}% 21
+\BOOKMARK [3][-]{subsubsection.2.7.5}{Retracting}{subsection.2.7}% 22
+\BOOKMARK [1][-]{section.3}{Experiment}{}% 23
+\BOOKMARK [2][-]{subsection.3.1}{Description}{section.3}% 24
+\BOOKMARK [2][-]{subsection.3.2}{Success Criteria}{section.3}% 25
+\BOOKMARK [2][-]{subsection.3.3}{Result}{section.3}% 26
+\BOOKMARK [2][-]{subsection.3.4}{Result Analysis}{section.3}% 27
+\BOOKMARK [2][-]{subsection.3.5}{Unexpected Problems}{section.3}% 28
+\BOOKMARK [3][-]{subsubsection.3.5.1}{Stickiness}{subsection.3.5}% 29
+\BOOKMARK [3][-]{subsubsection.3.5.2}{Inaccuracy of Baxter}{subsection.3.5}% 30
+\BOOKMARK [1][-]{section.4}{Conclusion}{}% 31
+\BOOKMARK [2][-]{subsection.4.1}{Recap}{section.4}% 32
+\BOOKMARK [2][-]{subsection.4.2}{Future Works}{section.4}% 33
