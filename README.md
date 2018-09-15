@@ -3,7 +3,7 @@ MECE 6615 ROBOTIC MANIPULATION <br/>
 Team #8 Blueberry Jam
 Universal Gripper using Computer Vision
 
-# [Final Report] (/Final Report/blueberry jam.pdf)
+ [Final Report] (/Final Report/blueberry jam.pdf)
 
 
 ----------------------------------------
